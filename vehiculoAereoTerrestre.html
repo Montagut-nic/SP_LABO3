@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        h2,
+        h1 {
+            color: #0d2455;
+            margin: 10px 30px;
+            text-align: center;
+        }
+
+        .boton {
+            background-color: #b9c9fe;
+            color: #039;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 5px 2px;
+            margin: 2px;
+            align-self: center;
+        }
+
+        td {
+            padding: 8px;
+            background: #e8edff;
+            border-bottom: 1px solid #fff;
+            color: #669;
+            border: 4px solid #fff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        th {
+            width: 96%;
+            background-color: #b9c9fe;
+            color: #039;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 6px 6px;
+        }
+
+        select {
+            background-color: #b9c9fe;
+            color: #2b52a0;
+            padding: 4px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        div.btn_group>button {
+            width: 25%;
+            margin: 2px;
+        }
+
+        table {
+            border-collapse: separate;
+            justify-content: space-evenly;
+            margin: 10px;
+        }
+
+        body {
+            background-color: #00003b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            background-color: #ff9900ff;
+            width: 80%;
+            min-width: 600px;
+            box-shadow: 0 0 2px 2px #5cecffff;
+            border-radius: 12px;
+            justify-content: center;
+        }
+
+        .form {
+            z-index: 1;
+        }
+
+        div.group {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            margin: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .disabled {
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .spin {
+            border: 16px solid #0042A4;
+            border-radius: 50%;
+            border-top: 16px solid #3775CF;
+            border-right: 16px solid #619BEE;
+            border-bottom: 16px solid #96BFF9;
+            border-left: 16px solid #C9E0FF;
+            width: 50px;
+            height: 50px;
+            -webkit-animation: spin 1.5s linear infinite;
+            animation: spin 1.5s linear infinite;
+            z-index: 2;
+            position: absolute;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script type="text/javascript">
+
+        let vehiculos = [];
+        let initialData;
+
+
+        //CLASES
+        class Vehiculo {
+
+            constructor(id, modelo, anoFab, velMax) {
+                this.id = parseInt(id);
+                this.modelo = modelo;
+                this.anoFab = parseInt(anoFab);
+                this.velMax = parseInt(velMax);
+            }
+
+            toString() {
+                return `| ID: ${this.id} | Modelo: ${this.modelo} | Año Fabricacion: ${this.anoFab} | Velocidad Maxima: ${this.velMax}`;
+            }
+
+        }
+
+        class Aereo extends Vehiculo {
+            constructor(id, modelo, anoFab, velMax, altMax, autonomia) {
+                super(id, modelo, anoFab, velMax);
+                this.altMax = parseInt(altMax);
+                this.autonomia = parseInt(autonomia);
+
+            }
+        }
+
+        class Terrestre extends Vehiculo {
+            constructor(id, modelo, anoFab, velMax, cantPue, cantRue,) {
+                super(id, modelo, anoFab, velMax);
+                this.cantPue = parseInt(cantPue);
+                this.cantRue = parseInt(cantRue);
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="spin hidden" id="spinner"></div>
+
+    <div name="form_datos" class="form container " id="form_datos">
+        <h1>Form Lista</h1>
+        <table name="tabla">
+            <thead>
+                <tr>
+                    <th class="h_id">ID</th>
+                    <th class="h_modelo">Modelo</th>
+                    <th class="h_anoFab">Anio Fabricacion</th>
+                    <th class="h_velMax">Velocidad Maxima</th>
+                    <th class="h_altMax">Altura Maxima</th>
+                    <th class="h_autonomia">Autonomia</th>
+                    <th class="h_cantPue">Cantidad Puertas</th>
+                    <th class="h_cantRue">Cantidad Ruedas</th>
+                    <th class="h_modificar">Modificar</th>
+                    <th class="h_eliminar">Eliminar</th>
+                </tr>
+            </thead>
+            <tbody id="tr_body">
+            </tbody>
+        </table>
+        <button value="agregar" class="boton" id="btn_agregar">Agregar</button>
+    </div>
+
+    <div name="form_ABM" class="form container hidden" id="form_ABM">
+        <h1>Formulario ABM</h1>
+        <div class="group ">
+            <label for="abm_id">ID: </label>
+            <input type="text" readonly name="abm_id" id="abm_id">
+        </div>
+        <div class="group">
+            <label for="abm_modelo">Modelo: </label>
+            <input type="text" name="abm_modelo" id="abm_modelo">
+        </div>
+        <div class="group">
+            <label for="abm_anoFab">Anio Fabricacion: </label>
+            <input type="text" name="abm_anoFab" id="abm_anoFab">
+        </div>
+        <div class="group">
+            <label for="abm_velMax">Velocidad Maxima: </label>
+            <input type="text" name="abm_velMax" id="abm_velMax">
+        </div>
+        <div class="group">
+            <label for="abm_tipo">Tipo: </label>
+            <select name="abm_tipo" id="abm_tipo">
+                <option value="Aereo" selected>Aereo</option>
+                <option value="Terrestre">Terrestre</option>
+            </select>
+        </div>
+        <div class="Aereo" id="Aereo_group">
+            <div class="group">
+                <label for="abm_altMax">Altura Maxima: </label>
+                <input type="text" name="abm_altMax" id="abm_altMax">
+            </div>
+            <div class="group">
+                <label for="abm_autonomia">Autonomia: </label>
+                <input type="text" name="abm_autonomia" id="abm_autonomia">
+            </div>
+        </div>
+        <div class="Terrestre hidden" id="Terrestre_group">
+            <div class="group">
+                <label for="abm_cantPue">Cantidad Puertas: </label>
+                <input type="text" name="abm_cantPue" id="abm_cantPue">
+            </div>
+            <div class="group">
+                <label for="abm_cantRue">Cantidad Ruedas: </label>
+                <input type="text" name="abm_cantRue" id="abm_cantRue">
+            </div>
+        </div>
+
+        <div class="group btn_group">
+            <button value="acept" class="boton cambioFrm" id="acept_btn">Aceptar</button>
+            <button value="can" class="boton cambioFrm" id="can_btn">Cancelar</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        const abm_id = document.getElementById("abm_id");
+        const abm_modelo = document.getElementById("abm_modelo");
+        const abm_anoFab = document.getElementById("abm_anoFab");
+        const abm_velMax = document.getElementById("abm_velMax");
+        const abm_tipo = document.getElementById("abm_tipo");
+        const abm_altMax = document.getElementById("abm_altMax");
+        const abm_autonomia = document.getElementById("abm_autonomia");
+        const abm_cantPue = document.getElementById("abm_cantPue");
+        const abm_cantRue = document.getElementById("abm_cantRue");
+
+        const tr_body = document.getElementById("tr_body");
+
+        let botones_baja =document.getElementsByClassName("baja_btn");
+        const list_btns_mod = document.querySelectorAll(".mod_btn");
+
+
+        //cargar data y tabla
+        function getInitialData() {
+            toggleBloquearContenido();
+            toggleMostrarSpiner();
+            const requestOptions = { method: 'GET' };
+            let consulta = fetch("http://localhost/SPLabo/vehiculoAereoTerrestre.php", requestOptions);
+            consulta.then(respuesta => {
+                if (respuesta.status == 200) {
+                    respuesta.json().then(js => {
+
+                        for (let vehiculo of js) {
+                            if ((vehiculo.hasOwnProperty("id") && vehiculo.hasOwnProperty("modelo")
+                                && vehiculo.hasOwnProperty("anoFab") && vehiculo.hasOwnProperty("velMax")) &&
+                                (parseInt(vehiculo.id) > 0 && (vehiculo.modelo != "" && vehiculo.modelo != null)
+                                    && parseInt(vehiculo.anoFab) >= 1885 && parseInt(vehiculo.velMax) >= 0)) {
+
+                                if (vehiculo.hasOwnProperty("altMax") && vehiculo.hasOwnProperty("autonomia") &&
+                                    parseInt(vehiculo.altMax) >= 0 && parseInt(vehiculo.autonomia) >= 0) {
+                                    let aereo = new Aereo(vehiculo.id, vehiculo.modelo, vehiculo.anoFab, vehiculo.velMax, vehiculo.altMax, vehiculo.autonomia,);
+                                    vehiculos.push(aereo);
+                                } else if (vehiculo.hasOwnProperty("cantPue") && vehiculo.hasOwnProperty("cantRue") &&
+                                    parseInt(vehiculo.cantPue) >= 0 && parseInt(vehiculo.cantRue) >= 0) {
+                                    let terrestre = new Terrestre(vehiculo.id, vehiculo.modelo, vehiculo.anoFab, vehiculo.velMax, vehiculo.cantPue, vehiculo.cantRue,);
+                                    vehiculos.push(terrestre);
+                                }
+                            }
+                        }
+                        vehiculosReload();
+                        toggleBloquearContenido();
+                        toggleMostrarSpiner();
+                    })
+
+                } else {
+                    toggleBloquearContenido();
+                    toggleMostrarSpiner();
+                    alert("Error: response status not 200");
+                }
+            }).catch(er => {
+                toggleBloquearContenido();
+                toggleMostrarSpiner();
+                alert("ha ocurrido un error");
+            });
+        }
+
+        const loadTableData = (vehiculo) => {
+            tr_body.innerHTML += `
+                <tr id="${vehiculo.id}" class="fila">
+                    <td>${vehiculo.id}</td>
+                    <td>${vehiculo.modelo}</td>
+                    <td>${vehiculo.anoFab}</td>
+                    <td>${vehiculo.velMax}</td>
+                    <td>${vehiculo.altMax ? vehiculo.altMax : 'N/A'}</td>
+                    <td>${vehiculo.autonomia ? vehiculo.autonomia : 'N/A'}</td>
+                    <td>${vehiculo.cantPue ? vehiculo.cantPue : 'N/A'}</td>
+                    <td>${vehiculo.cantRue ? vehiculo.cantRue : 'N/A'}</td>
+                    <td><button value="mod" class="boton mod_btn" id="${vehiculo.id}">Modificar</button></td>
+                    <td><button value="baja" class="boton baja_btn" id="${vehiculo.id}">Eliminar</button></td>
+                </tr>
+            `;
+        }
+
+        const vehiculosReload = () => {
+            tr_body.innerHTML = '';
+            for (const vehiculo of vehiculos) {
+                loadTableData(vehiculo);
+            }
+        }
+
+
+        //spinner
+
+        function toggleBloquearContenido() {
+            document.querySelectorAll(".form").forEach(element => {
+                element.classList.toggle("disabled");
+            })
+        }
+
+        function toggleMostrarSpiner() {
+            document.getElementById("spinner").classList.toggle("hidden");
+        }
+
+
+        //abm
+
+        function cambiarAbmTipo() {
+            const aereo = document.querySelector(".Aereo");
+            const terrestre = document.querySelector(".Terrestre");
+            aereo.classList.toggle("hidden");
+            terrestre.classList.toggle("hidden");
+        }
+
+        abm_tipo.addEventListener("change", () => {
+            cambiarAbmTipo();
+        });
+
+        function setearABMConID(id) {
+            let vehiculo = vehiculos.find(p => p.id == id);
+            abm_id.value = vehiculo.id;
+            abm_modelo.value = vehiculo.modelo;
+            abm_anoFab.value = vehiculo.anoFab;
+            abm_velMax.value = vehiculo.velMax;
+            abm_altMax.value = vehiculo.altMax ? vehiculo.altMax : "";
+            abm_autonomia.value = vehiculo.autonomia ? vehiculo.autonomia : "";
+
+            abm_cantPue.value = vehiculo.cantPue ? vehiculo.cantPue : "";
+            abm_cantRue.value = vehiculo.cantRue ? vehiculo.cantRue : "";
+
+            if (vehiculo.hasOwnProperty("cantPue") && abm_tipo.value == "Aereo") {
+                cambiarAbmTipo();
+                abm_tipo.value = "Terrestre";
+            }
+            if (vehiculo.hasOwnProperty("altMax") && abm_tipo.value == "Terrestre") {
+                cambiarAbmTipo();
+                abm_tipo.value = "Aereo";
+            }
+        }
+
+        function toggleBloquearIdABM() {
+            abm_id.classList.toggle("disabled");
+        }
+
+        function validateABMdata() {
+            switch (abm_tipo.value) {
+                case 'Aereo':
+                    return abm_modelo.value != null && abm_modelo.value != "" &&
+                        abm_anoFab.value != null && abm_anoFab.value != "" &&
+                        !isNaN(parseInt(abm_velMax.value)) && parseInt(abm_velMax.value) > 0 &&
+                        abm_altMax.value != null && abm_altMax.value != "" &&
+                        abm_autonomia.value != null && abm_autonomia.value != "";
+
+                    break;
+                case 'Terrestre':
+                    return abm_modelo.value != null && abm_modelo.value != "" &&
+                        abm_anoFab.value != null && abm_anoFab.value != "" &&
+                        !isNaN(parseInt(abm_velMax.value)) && parseInt(abm_velMax.value) > 0 &&
+                        abm_cantPue.value != null && abm_cantPue.value != "" &&
+                        !isNaN(parseInt(abm_cantRue.value)) && parseInt(abm_cantRue.value) >= 0;
+                    break;
+                default:
+                    return false;
+            }
+        }
+
+        function alta_putXMLHttp() {
+            toggleBloquearContenido();
+            toggleMostrarSpiner();
+            var request = new XMLHttpRequest();
+            let alta;
+            if (validateABMdata()) {
+                switch (abm_tipo.value) {
+                    case 'Aereo':
+                        alta = JSON.stringify({ modelo: abm_modelo.value, anoFab: abm_anoFab.value, velMax: abm_velMax.value, altMax: abm_altMax.value, autonomia: abm_autonomia.value });
+                        break;
+                    case 'Terrestre':
+                        alta = JSON.stringify({ modelo: abm_modelo.value, anoFab: abm_anoFab.value, velMax: abm_velMax.value, cantPue: abm_cantPue.value, cantRue: abm_cantRue.value });
+                        break;
+                }
+                request.onreadystatechange = function () {
+                    if (request.readyState == 4) {
+                        if (request.status == 200) {
+
+                            let resp = JSON.parse(request.response);
+                            switch (abm_tipo.value) {
+                                case 'Aereo':
+                                    let aereo = new Aereo(resp.id, abm_modelo.value, abm_anoFab.value, abm_velMax.value, abm_altMax.value, abm_autonomia.value);
+                                    vehiculos.push(aereo);
+                                    break;
+                                case 'Terrestre':
+                                    let terrestre = new Terrestre(resp.id, abm_modelo.value, abm_anoFab.value, abm_velMax.value, abm_cantPue.value, abm_cantRue.value);
+                                    vehiculos.push(terrestre);
+                                    break;
+                            }
+                            vehiculosReload();
+                            toggleBloquearContenido();
+                            toggleMostrarSpiner();
+                            cambiarForm();
+                        } else {
+                            toggleBloquearContenido();
+                            toggleMostrarSpiner();
+                            cambiarForm();
+                            alert("error: response status not 200");
+                        }
+                    }
+                }
+                request.open("PUT", "http://localhost/SPLabo/vehiculoAereoTerrestre.php", true);
+                request.setRequestHeader('Content-type', 'application/json');
+                request.send(alta);
+            } else {
+                toggleBloquearContenido();
+                toggleMostrarSpiner();
+                cambiarForm();
+                alert("error en los campos del abm");
+            }
+        }
+
+
+
+        document.getElementById("acept_btn").addEventListener("click", (e) => {
+            if(abm_modelo.isContentEditable){
+            alta_putXMLHttp();
+        }
+        });
+
+        function cambiarForm() {
+            document.querySelectorAll(".form").forEach(item => {
+                item.classList.toggle("hidden");
+            });
+        }
+
+        function setearABM() {
+            abm_id.value = "";
+            abm_modelo.value = "";
+            abm_anoFab.value = "";
+            abm_velMax.value = "";
+            abm_altMax.value = "";
+            abm_autonomia.value = "";
+            abm_cantPue.value = "";
+            abm_cantRue.value = "";
+        }
+
+        document.getElementById("btn_agregar").addEventListener("click", (e) => {
+            setearABM();
+            cambiarForm();
+            toggleBloquearIdABM();
+        });
+
+        document.getElementById("can_btn").addEventListener("click", (e) => {
+            cambiarForm();
+            setearABM();
+            toggleBloquearIdABM();
+        });
+
+        
+
+        window.onload = () => {
+            getInitialData();
+            for(let i=0;i<botones_baja.length;i++){
+                botones_baja.item[i].addEventListener('click',()=>{
+                    cambiarForm();
+                    setearABMConID(item[i].id);
+                    abm_id.setAttribute(isContentEditable,false);
+                    abm_modelo.setAttribute(isContentEditable,false);
+                    abm_anoFab.setAttribute(isContentEditable,false);
+                    abm_velMax.setAttribute(isContentEditable,false);
+                    abm_altMax.setAttribute(isContentEditable,false);
+                    abm_autonomia.setAttribute(isContentEditable,false);
+                    abm_cantPue.setAttribute(isContentEditable,false);
+                    abm_cantRue.setAttribute(isContentEditable,false);
+                })
+            }
+        };
+
+        async function deleteFetch(id) {
+            let baja;
+            baja= JSON.stringify({ id: id });
+            let respuesta = await fetch("http://localhost/SPLabo/vehiculoAereoTerrestre.php", {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: (baja)
+            })
+            let texto = await respuesta.text();
+        }
+
+        async function postFetch() {
+            let respuesta = await fetch("http://localhost/SPLabo/vehiculoAereoTerrestre.php", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body
+            })
+            let texto = await respuesta.text();
+        }
+
+    </script>
+
+</body>
