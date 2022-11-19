@@ -356,22 +356,15 @@
                 element.addEventListener("click", () => {
                     cambiarForm();
                     setearABMConID(element.id);
-                    abm_id.setAttribute(isContentEditable, false);
-                    abm_modelo.setAttribute(isContentEditable, false);
-                    abm_anoFab.setAttribute(isContentEditable, false);
-                    abm_velMax.setAttribute(isContentEditable, false);
-                    abm_altMax.setAttribute(isContentEditable, false);
-                    abm_autonomia.setAttribute(isContentEditable, false);
-                    abm_cantPue.setAttribute(isContentEditable, false);
-                    abm_cantRue.setAttribute(isContentEditable, false);
-                    abm_id.classList.toggle("disabled");
-                    abm_modelo.classList.toggle("disabled");
-                    abm_anoFab.classList.toggle("disabled");
-                    abm_velMax.classList.toggle("disabled");
-                    abm_altMax.classList.toggle("disabled");
-                    abm_autonomia.classList.toggle("disabled");
-                    abm_cantPue.classList.toggle("disabled");
-                    abm_cantRue.classList.toggle("disabled");
+                    abm_id.readOnly=true;
+                    abm_modelo.readOnly=true;
+                    abm_anoFab.readOnly=true;
+                    abm_velMax.readOnly=true;
+                    abm_altMax.readOnly=true;
+                    abm_autonomia.readOnly=true;
+                    abm_cantPue.readOnly=true;
+                    abm_cantRue.readOnly=true;
+                    
                 });
             })
         }
@@ -534,6 +527,15 @@
             setearABM();
             cambiarForm();
             toggleBloquearIdABM();
+            abm_id.readOnly=true;
+            abm_modelo.readOnly=false;
+            abm_anoFab.readOnly=false;
+            abm_velMax.readOnly=false;
+            abm_altMax.readOnly=false;
+            abm_autonomia.readOnly=false;
+            abm_cantPue.readOnly=false;
+            abm_cantRue.readOnly=false;
+            
         });
 
         document.getElementById("can_btn").addEventListener("click", (e) => {
