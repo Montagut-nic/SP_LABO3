@@ -355,6 +355,7 @@
             botones_baja.forEach(element => {
                 element.addEventListener("click", () => {
                     cambiarForm();
+                    setearABMConID(element.id);
                     abm_id.setAttribute(isContentEditable, false);
                     abm_modelo.setAttribute(isContentEditable, false);
                     abm_anoFab.setAttribute(isContentEditable, false);
