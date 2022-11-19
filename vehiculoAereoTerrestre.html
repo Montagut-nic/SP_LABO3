@@ -282,7 +282,7 @@
 
         const tr_body = document.getElementById("tr_body");
 
-        let botones_baja =document.getElementsByClassName("baja_btn");
+        let botones_baja = document.getElementsByName("baja");
         const list_btns_mod = document.querySelectorAll(".mod_btn");
 
 
@@ -341,8 +341,8 @@
                     <td>${vehiculo.autonomia ? vehiculo.autonomia : 'N/A'}</td>
                     <td>${vehiculo.cantPue ? vehiculo.cantPue : 'N/A'}</td>
                     <td>${vehiculo.cantRue ? vehiculo.cantRue : 'N/A'}</td>
-                    <td><button value="mod" class="boton mod_btn" id="${vehiculo.id}">Modificar</button></td>
-                    <td><button value="baja" class="boton baja_btn" id="${vehiculo.id}">Eliminar</button></td>
+                    <td><button name="mod" class="boton mod_btn" id="${vehiculo.id}">Modificar</button></td>
+                    <td><button name="baja" class="boton baja_btn" id="${vehiculo.id}">Eliminar</button></td>
                 </tr>
             `;
         }
@@ -352,6 +352,19 @@
             for (const vehiculo of vehiculos) {
                 loadTableData(vehiculo);
             }
+            botones_baja.forEach(element => {
+                element.addEventListener("click", () => {
+                    cambiarForm();
+                    abm_id.setAttribute(isContentEditable, false);
+                    abm_modelo.setAttribute(isContentEditable, false);
+                    abm_anoFab.setAttribute(isContentEditable, false);
+                    abm_velMax.setAttribute(isContentEditable, false);
+                    abm_altMax.setAttribute(isContentEditable, false);
+                    abm_autonomia.setAttribute(isContentEditable, false);
+                    abm_cantPue.setAttribute(isContentEditable, false);
+                    abm_cantRue.setAttribute(isContentEditable, false);
+                });
+            })
         }
 
 
@@ -484,9 +497,11 @@
 
 
         document.getElementById("acept_btn").addEventListener("click", (e) => {
-            if(abm_modelo.isContentEditable){
-            alta_putXMLHttp();
-        }
+            if (abm_modelo.isContentEditable) {
+                alta_putXMLHttp();
+            }else{
+                deleteFetch(abm_id.value);
+            }
         });
 
         function cambiarForm() {
@@ -518,29 +533,16 @@
             toggleBloquearIdABM();
         });
 
-        
+
 
         window.onload = () => {
             getInitialData();
-            for(let i=0;i<botones_baja.length;i++){
-                botones_baja.item[i].addEventListener('click',()=>{
-                    cambiarForm();
-                    setearABMConID(item[i].id);
-                    abm_id.setAttribute(isContentEditable,false);
-                    abm_modelo.setAttribute(isContentEditable,false);
-                    abm_anoFab.setAttribute(isContentEditable,false);
-                    abm_velMax.setAttribute(isContentEditable,false);
-                    abm_altMax.setAttribute(isContentEditable,false);
-                    abm_autonomia.setAttribute(isContentEditable,false);
-                    abm_cantPue.setAttribute(isContentEditable,false);
-                    abm_cantRue.setAttribute(isContentEditable,false);
-                })
-            }
+
         };
 
         async function deleteFetch(id) {
             let baja;
-            baja= JSON.stringify({ id: id });
+            baja = JSON.stringify({ id: id });
             let respuesta = await fetch("http://localhost/SPLabo/vehiculoAereoTerrestre.php", {
                 method: "DELETE",
                 headers: {
